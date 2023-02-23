@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:get_x_mvvm/views/splashView/SplashView.dart';
+import 'package:get/get.dart';
+import 'package:get_x_mvvm/res/getx_loclization/languages.dart';
+import 'package:get_x_mvvm/res/routes/routes.dart';
+
+
+
+
 
 void main() {
   runApp(const MyApp());
@@ -11,12 +17,15 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Flutter Demo',
+      translations: Languages(),
+      locale: const Locale('en' ,'US'),
+      fallbackLocale: const Locale('en' ,'US'),
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const SplashView(),
+      getPages: AppRoutes.appRoutes(),
     );
   }
 }

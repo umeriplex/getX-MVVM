@@ -13,14 +13,14 @@ class _SplashViewState extends State<SplashView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
+      body: const Center(
         child: Text('Splash View'),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           throw UnauthorisedException();
         },
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       )
     );
   }

@@ -1,59 +1,59 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_x_mvvm/data/exceptions/AppExceptions.dart';
-
-import '../../res/AppConstants.dart';
-import 'BaseApiServices.dart';
 import 'package:http/http.dart' as http;
+import 'base_api_services.dart';
 
 class ApiServices extends BaseApiServices{
 
   @override
-  Future getAPI(String url) async {
-    debugPrint("GET API HIT USING THIS URL ==> $url");
-    dynamic responseJson;
-    try{
-      final response = await http.get(Uri.parse(url)).timeout(const Duration(seconds: AppConstants.apiTimeOut));
-      responseJson = returnResponse(response);
-    } on SocketException{
-      throw NoInternetException('');
-    } on TimeoutException{
-      throw RequestTimeoutException('');
-    } on HttpException{
-      throw BadRequestException('');
-    } on FormatException{
-      throw FetchDataException('');
-    } on Exception{
-      throw UnauthorisedException('');
+  Future<dynamic> getApi(String url) async{
+
+    if (kDebugMode) {
+      print(url);
     }
-    return responseJson;
+
+    dynamic responseJson ;
+    try {
+      final response = await http.get(Uri.parse(url)).timeout( const Duration(seconds: 10));
+      responseJson  = returnResponse(response) ;
+    }on SocketException {
+      throw NoInternetException('');
+    }on RequestTimeoutException {
+      throw RequestTimeoutException('');
+
+    }
+    print(responseJson);
+    return responseJson ;
+
   }
 
   @override
-  Future postAPI(String url, var body) async {
-    debugPrint("POST API HIT USING THIS URL ==> $url" " AND BODY ==> $body");
-    dynamic responseJson;
-    try{
-      final response = await http.post(
-          Uri.parse(url),
-          body: jsonEncode(body)  // todo agar raw form mai data hoga to jsoonEncode karenge, warna nahi
-      ).timeout(const Duration(seconds: AppConstants.apiTimeOut));
-      responseJson = returnResponse(response);
-    } on SocketException{
-      throw NoInternetException('');
-    } on TimeoutException{
-      throw RequestTimeoutException('');
-    } on HttpException{
-      throw BadRequestException('');
-    } on FormatException{
-      throw FetchDataException('');
-    } on Exception{
-      throw UnauthorisedException('');
+  Future<dynamic> postApi(data, String url) async{
+    if (kDebugMode) {
+      debugPrint("API HIT ON => $url");
+      debugPrint("API REQUEST DATA => $data");
     }
-    return responseJson;
+    dynamic responseJson ;
+    try {
+      final response = await http.post(Uri.parse(url),
+          body: data
+      ).timeout( const Duration(seconds: 10));
+      responseJson  = returnResponse(response) ;
+    }on SocketException {
+      throw NoInternetException('');
+    }on RequestTimeoutException {
+      throw RequestTimeoutException('');
+
+    }
+    if (kDebugMode) {
+      print(responseJson);
+    }
+    return responseJson ;
+
   }
 
   dynamic returnResponse(http.Response response){
@@ -65,10 +65,12 @@ class ApiServices extends BaseApiServices{
         throw BadRequestException("${response.body} Status Code: ${response.statusCode}");
       case 401:
       case 403:
+      case 302:
         throw UnauthorisedException("${response.body} Status Code: ${response.statusCode}");
       case 500:
       default:
         throw FetchDataException("${response.body} Status Code: ${response.statusCode}");
     }
   }
+
 }
